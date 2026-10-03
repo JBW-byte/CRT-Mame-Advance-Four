@@ -56,6 +56,7 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
   * **LG WOLED (WRGB):** Dedicated 4-subpixel cadence with white-subpixel attenuation, preventing color wash-out on OLED panels.
   * **Samsung QD-OLED:** Triangular subpixel array smoothing to eliminate fringing.
 * **Auto Mask Brightness Compensation (`M_AutoComp`):** Dynamically calculates mask transmission loss and restores target luminance without clipping highlights.
+* - HDR10 / scRGB Profiles: Industry-standard Rec.2020 / SMPTE ST 2084 PQ & scRGB mapping.
 
 ### 📡 3. Linear-Space Analog Signal & NTSC Composite Emulation
 * **Pure Linear-Space YIQ Processing:** Chroma/Luma decoding operating completely free of gamma-space clipping distortions.
@@ -82,6 +83,7 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 * **Bandwidth Optimization:** Halation runs at half resolution (75% VRAM bandwidth reduction) and diffuse glow runs at 1/8th resolution with a 16-tap hardware-bilinear downsampler.
 * **Zero-Branch Inner Loops:** Flattened branchless math for deconvergence and scanlines to maximize GPU warp occupancy.
 * **Hardware Discard:** Disabled features execute `discard;` instantly, bypassing unneeded render target operations.
+*  Quality Profiles: Selectable tiers (Performance 2-line, Balanced, Ultra).
 
 ---
 
