@@ -104,7 +104,7 @@ code
    ```text
 # --- Video Options ---
 video                     d3d11       # Or 'bgfx' / 'opengl'
-filter                    0           # Disable bilinear filtering (let ReShade filter)
+filter                    0           # Disable bilinear filtering (let ReShade filter) or turn on for more smoothing
 keepaspect                1           # Maintain original game aspect ratio
 unevenstretch             1           # Prevent MAME software scaling distortion
 
