@@ -1,17 +1,14 @@
 /*
     ===========================================================================
-    CRT-Mame-Advance-Four.fx (v4.4 Deluxe Edition) 
-    State-of-the-art CRT simulation engineered specifically for MAME64(other emulators supported).
-
-    Summary of v4.4 Upgrades:
+    CRT-Mame-Advance-Four.fx (v4.5 Deluxe Edition) 
+    State-of-the-art CRT simulation engineered specifically for MAME64 (other emulators supported).
+	
+	Summary of v4.5 Upgrades:
     - Bandwidth Optimized: Intermediate render targets downgraded from RGBA16F to RGB10A2 and RGBA8, saving 50%+ VRAM bandwidth.
     - Kawase Downsampling: Replaced 16-tap Glow loop with a highly optimized 4-tap bilinear Kawase filter.
     - Luma Convergence: Deconvergence shift scales dynamically with pixel brightness (bright pixels bleed more).
     - Edge Focus Decay: Beam sharpness dynamically softens at the tube edges.
     - Tube Aging & Raster Sweep: Added phosphor degradation and rolling sync sweeps for premium CRT authenticity.
-    ===========================================================================
-
-	Summary (v4.3):
     - Quality Profiles: Selectable tiers (Performance 2-line, Balanced, Ultra).
     - Compile-Safe: Zero compiler warnings (no dynamic loop break/continue in unroll).
     - Damper Wires: Default set to 1 Wire (W_Count = 0, zero-based index).
@@ -317,13 +314,13 @@ uniform float DPX_Colorfulness <
     ui_type = "drag"; ui_min = 0.5; ui_max = 4.0; ui_step = 0.05;
     ui_label = "DPX Colorfulness";
     ui_category = "=== 6. DPX Filmic Tone & Color ===";
-> = 1.00;
+> = 1.35;
 
 uniform float DPX_Saturation <
     ui_type = "drag"; ui_min = 0.5; ui_max = 2.0; ui_step = 0.05;
     ui_label = "DPX Saturation";
     ui_category = "=== 6. DPX Filmic Tone & Color ===";
-> = 1.00;
+> = 1.20;
 
 // ===================== 7. TUBE GEOMETRY & CURVATURE =====================
 uniform float2 G_Warp <
@@ -336,7 +333,7 @@ uniform float G_CornerSize <
     ui_type = "drag"; ui_min = 0.0; ui_max = 0.05; ui_step = 0.002;
     ui_label = "Corner Rounding Radius";
     ui_category = "=== 7. Tube Geometry & Curvature ===";
-> = 0.000;
+> = 0.020;
 
 uniform float2 D_StaticShift <
     ui_type = "drag"; ui_min = -2.0; ui_max = 2.0; ui_step = 0.05;
@@ -355,7 +352,7 @@ uniform float D_RadialYoke <
     ui_type = "drag"; ui_min = 0.0; ui_max = 2.0; ui_step = 0.05;
     ui_label = "Deflection Yoke Corner Fringe";
     ui_category = "=== 7. Tube Geometry & Curvature ===";
-> = 0.00;
+> = 0.25;
 
 // ===================== 8. COLOR, GAMMA & HDR DISPLAY PROFILES =====================
 uniform int HDR_Profile <
@@ -382,7 +379,7 @@ uniform float COL_BlackLevel <
     ui_type = "drag"; ui_min = -0.05; ui_max = 0.05; ui_step = 0.001;
     ui_label = "Black Level Offset (Output Space)";
     ui_category = "=== 8. Color, Gamma & HDR Display Profiles ===";
-> = -0.015;
+> = -0.008;
 
 uniform float COL_InputGamma <
     ui_type = "drag"; ui_min = 1.8; ui_max = 3.0; ui_step = 0.05;
@@ -421,7 +418,7 @@ uniform float Sync_Phase <
     ui_label = "Beam Sync Refresh Phase";
     ui_tooltip = "Adds a subliminal rolling brightness gradient mimicking analog 60Hz raster refresh sweeping.";
     ui_category = "=== 9. Hardware Imperfections & Optics ===";
-> = 0.05;
+> = 0.00;
 
 uniform int W_Count <
     ui_type = "combo";
@@ -931,7 +928,7 @@ float4 PS_Halation_V(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
     return float4(r, 1.0);
 }
 
-// Pass 7: Glow Downsample (v5.0 Kawase 4-Tap Optmization)
+// Pass 7: Glow Downsample (v5.0 Kawase 4-Tap Optimization)
 float4 PS_GlowDown(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
     if (!GL_Enable || GL_Strength <= 0.0) return float4(0.0, 0.0, 0.0, 1.0);
@@ -1171,10 +1168,11 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     mask = lerp(mask, float3(1.0, 1.0, 1.0), (saturate(lumaMask) * sqrt(saturate(lumaMask))) * M_Bloom);
     color *= mask * M_BrightBoost;
 
-    // v5.0 Upgrade: Raster Sweep Sync Phase
+    // v5.0 Upgrade: Single-Wave Analog Refresh Sweep
     if (Sync_Phase > 0.0)
     {
-        float sweep = frac(clampedWarpedUV.y * (BUFFER_HEIGHT / 10.0) - ((float)framecount * 0.05));
+        float sweepCoord = isTate ? clampedWarpedUV.x : clampedWarpedUV.y;
+        float sweep = frac(sweepCoord * 1.0 - ((float)framecount * 0.015));
         color *= lerp(1.0, 1.0 - Sync_Phase, sweep);
     }
 
