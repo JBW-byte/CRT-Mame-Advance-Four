@@ -25,6 +25,11 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
 
 ---
 
+<p float="left">
+  <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
+</p>
+
 ## ✨ Key Features
 
 ### ⚡ 1. Electron Beam Dynamics & Dynamic Scanlines
