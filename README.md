@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)]()
 
 <p align="center">
-  <b>Author:</b> L.E.D. &nbsp;|&nbsp; <b>Version:</b> 4.1 Deluxe Edition
+  <b>Author:</b> L.E.D. &nbsp;|&nbsp; <b>Version:</b> 4.2 Deluxe Edition
 </p>
 
 ---
