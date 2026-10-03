@@ -30,6 +30,8 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
 </p>
 
+There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually as its a basic method, fails if the screen has dark areas.
+
 ## ✨ Key Features
 
 ### ⚡ 1. Electron Beam Dynamics & Dynamic Scanlines
