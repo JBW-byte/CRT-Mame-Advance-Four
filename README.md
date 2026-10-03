@@ -5,8 +5,9 @@
 ### *State-of-the-Art CRT Simulation Engineered Specifically for MAME64 & Arcade Preservation, compatible with many more emulators*
 
 [![ReShade Version](https://img.shields.io/badge/ReShade-5.0%2B%20%7C%206.0%2B-blue?style=for-the-badge&logo=reshade)](https://reshade.me)
-[![Architecture](https://img.shields.io/badge/Pipeline-10--Pass%20Linear%20Space-purple?style=for-the-badge)]()
-[![API Support](https://img.shields.io/badge/APIs-DX9%20%7C%20DX11%20%7C%20DX12%20%7C%20Vulkan%20%7C%20OpenGL-brightgreen?style=for-the-badge)]()
+[![Architecture](https://img.shields.io/badge/Pipeline-12--Pass%20(10--bit%20Optimized)-purple?style=for-the-badge)]()
+[![Display Support](https://img.shields.io/badge/Display-HDR10%20%7C%20scRGB%20%7C%20SDR-yellow?style=for-the-badge)]()
+[![API Support](https://img.shields.io/badge/APIs-DX10%20%7C%20DX11%20%7C%20DX12%20%7C%20Vulkan%20%7C%20OpenGL-brightgreen?style=for-the-badge)]()
 [![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)]()
 
 <p align="center">
@@ -30,7 +31,7 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
 </p>
 
-There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually as its a basic method, fails if the screen has dark areas.
+There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually, fails if the horizontal screen has dark areas, mostly ok.
 
 ## ✨ Key Features
 
