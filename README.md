@@ -67,12 +67,10 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 
 ### 📺 4. Glass Curvature, Bezel Reflections & Framing
 * **Barrel Curvature Distortion:** Glass tube curvature with exact piece-wise signed distance field (SDF) corner clipping.
-* **Dynamic Cabinet Bezel Lip Reflection (`BZ_Enable`):** Screen light dynamically illuminates and reflects off the surrounding molded black cabinet bezel shroud in linear space.
 * **MAME Artwork Pass-Through (`UI_PassThroughBorder`):** Option to pass through original MAME bezels, marquees, and side artwork untouched while constraining CRT processing strictly to the active 4:3 / 3:4 tube raster.
 
 ### 🔬 5. Vintage Hardware & Tube Quirks
 * **High-Voltage Anode Sag (Screen Breathing):** The tube raster physically balloons outward during full-screen explosions and flashes.
-* **Trinitron Damper Wires:** Resolution-independent horizontal tungsten stabilizing wire shadows.
 * **Phosphor Persistence (Ghosting):** Independent R/G/B phosphor decay curves simulating classic arcade tube persistence.
 * **Deflection Yoke Deconvergence:** Radial and static multi-axis RGB convergence misalignment.
 * **AC Ground Hum Bar:** Rolling 50Hz / 60Hz power supply ground loop hum.
