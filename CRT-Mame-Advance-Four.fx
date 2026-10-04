@@ -2,7 +2,7 @@
     ===========================================================================
     CRT-Mame-Advance-Four.fx (v4.5 Deluxe Edition) 
     State-of-the-art CRT simulation engineered specifically for MAME64 (other emulators supported).
-	
+
 	Summary of v4.5 Upgrades:
     - Bandwidth Optimized: Intermediate render targets downgraded from RGBA16F to RGB10A2 and RGBA8, saving 50%+ VRAM bandwidth.
     - Kawase Downsampling: Replaced 16-tap Glow loop with a highly optimized 4-tap bilinear Kawase filter.
@@ -135,7 +135,7 @@ uniform int C_LineMode <
     ui_min = 0; ui_max = 6;
     ui_label = "Arcade Raster Line Preset";
     ui_category = "=== 2. System & Architecture ===";
-> = 1;
+> = 2;
 
 uniform float C_CustomLines <
     ui_type = "drag"; ui_min = 100.0; ui_max = 1200.0; ui_step = 1.0;
@@ -333,7 +333,7 @@ uniform float G_CornerSize <
     ui_type = "drag"; ui_min = 0.0; ui_max = 0.05; ui_step = 0.002;
     ui_label = "Corner Rounding Radius";
     ui_category = "=== 7. Tube Geometry & Curvature ===";
-> = 0.020;
+> = 0.000;
 
 uniform float2 D_StaticShift <
     ui_type = "drag"; ui_min = -2.0; ui_max = 2.0; ui_step = 0.05;
@@ -352,7 +352,7 @@ uniform float D_RadialYoke <
     ui_type = "drag"; ui_min = 0.0; ui_max = 2.0; ui_step = 0.05;
     ui_label = "Deflection Yoke Corner Fringe";
     ui_category = "=== 7. Tube Geometry & Curvature ===";
-> = 0.25;
+> = 0.00;
 
 // ===================== 8. COLOR, GAMMA & HDR DISPLAY PROFILES =====================
 uniform int HDR_Profile <
@@ -411,7 +411,7 @@ uniform float Tube_Age <
     ui_label = "Phosphor Aging & Burn-in";
     ui_tooltip = "Simulates high-hour arcade cabinets by degrading contrast and shifting white balance toward yellow/green.";
     ui_category = "=== 9. Hardware Imperfections & Optics ===";
-> = 0.0;
+> = 0.10;
 
 uniform float Sync_Phase <
     ui_type = "drag"; ui_min = 0.0; ui_max = 0.5; ui_step = 0.01;
@@ -450,7 +450,7 @@ uniform float HB_Frequency <
     ui_type = "drag"; ui_min = 1.0; ui_max = 8.0; ui_step = 0.5;
     ui_label = "AC Hum Bar Frequency (Wavelengths)";
     ui_category = "=== 9. Hardware Imperfections & Optics ===";
-> = 1.00;
+> = 1.50;
 
 uniform float BZ_Width <
     ui_type = "drag"; ui_min = 0.01; ui_max = 0.10; ui_step = 0.005;
