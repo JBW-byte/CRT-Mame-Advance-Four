@@ -37,18 +37,6 @@
 
 #include "ReShade.fxh"
 
-// Optional compile-time pass removal (set in ReShade > Preprocessor Definitions).
-// 1 = pass + render targets exist. 0 = passes and targets removed entirely (zero cost).
-#ifndef CRT_USE_PERSISTENCE
-    #define CRT_USE_PERSISTENCE 1
-#endif
-#ifndef CRT_USE_HALATION
-    #define CRT_USE_HALATION 1
-#endif
-#ifndef CRT_USE_GLOW
-    #define CRT_USE_GLOW 1
-#endif
-
 // Pixel-unit effects scale up above 1080p so they maintain identical physical size at 1440p/4K.
 #define CRT_RES_SCALE (max(BUFFER_HEIGHT / 1080.0, 1.0))
 
@@ -547,7 +535,6 @@ sampler SamplerLinear { Texture = TexLinear; AddressU = CLAMP; AddressV = CLAMP;
 texture TexSignal { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = RGB10A2; };
 sampler SamplerSignal { Texture = TexSignal; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
 
-#if CRT_USE_PERSISTENCE
 texture TexPersistPrev { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = RGB10A2; };
 sampler SamplerPersistPrev { Texture = TexPersistPrev; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
 
@@ -555,25 +542,18 @@ texture TexPersistCur { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = R
 sampler SamplerPersistCur { Texture = TexPersistCur; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
 
 #define CRT_SIGNAL_SAMPLER SamplerPersistCur
-#else
-#define CRT_SIGNAL_SAMPLER SamplerSignal
-#endif
 
-#if CRT_USE_HALATION
 texture TexHalationH { Width = BUFFER_WIDTH / 2; Height = BUFFER_HEIGHT / 2; Format = RGB10A2; };
 sampler SamplerHalationH { Texture = TexHalationH; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
 
 texture TexHalationV { Width = BUFFER_WIDTH / 2; Height = BUFFER_HEIGHT / 2; Format = RGB10A2; };
 sampler SamplerHalationV { Texture = TexHalationV; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
-#endif
 
-#if CRT_USE_GLOW
 texture TexGlowA { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = RGB10A2; };
 sampler SamplerGlowA { Texture = TexGlowA; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
 
 texture TexGlowB { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = RGB10A2; };
 sampler SamplerGlowB { Texture = TexGlowB; AddressU = CLAMP; AddressV = CLAMP; MagFilter = LINEAR; MinFilter = LINEAR; };
-#endif
 
 // =========================================================================
 // Helper Functions & Color Science
@@ -888,7 +868,6 @@ float4 PS_SignalBlur(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
     return float4(c, 1.0);
 }
 
-#if CRT_USE_PERSISTENCE
 // Pass 3 & 4: Phosphor Persistence
 float4 PS_PersistUpdate(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
@@ -902,9 +881,7 @@ float4 PS_PersistCopy(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Targe
 {
     return tex2Dlod(SamplerPersistCur, float4(uv, 0.0, 0.0));
 }
-#endif
 
-#if CRT_USE_HALATION
 // Pass 5: Halation H
 float4 PS_Halation_H(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
@@ -936,9 +913,7 @@ float4 PS_Halation_V(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
     r += (tex2Dlod(SamplerHalationH, float4(clamp(uv + stepVec * 4.0, pad, 1.0 - pad), 0.0, 0.0)).rgb + tex2Dlod(SamplerHalationH, float4(clamp(uv - stepVec * 4.0, pad, 1.0 - pad), 0.0, 0.0)).rgb) * 0.0162160;
     return float4(r, 1.0);
 }
-#endif
 
-#if CRT_USE_GLOW
 // Pass 7: Rebuilt 4-Tap Bilinear Box Downsampler
 float4 PS_GlowDown(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
@@ -985,7 +960,6 @@ float4 PS_GlowV(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 
     return float4(r, 1.0);
 }
-#endif
 
 // Pass 10: Main Rasterizer & Tube Compositor
 float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
@@ -1201,14 +1175,10 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     }
 
     float2 sampleUV = pad + clampedWarpedUV * activeSize;
-#if CRT_USE_HALATION
     if (H_Enable && H_Strength > 0.0)
         color += tex2Dlod(SamplerHalationV, float4(sampleUV, 0.0, 0.0)).rgb * H_Strength;
-#endif
-#if CRT_USE_GLOW
     if (GL_Enable && GL_Strength > 0.0)
         color += tex2Dlod(SamplerGlowA, float4(sampleUV, 0.0, 0.0)).rgb * GL_Strength;
-#endif
 
     // Anti-Aliased Border Trim
     color *= maskClip;
@@ -1257,18 +1227,12 @@ technique CRT_Mame_Advance_Four
     pass TateCopy { VertexShader = PostProcessVS; PixelShader = PS_TateCopy; RenderTarget = TexTateStatePrev; }
     pass Linearize { VertexShader = PostProcessVS; PixelShader = PS_Linearize; RenderTarget = TexLinear; }
     pass SignalBlur { VertexShader = PostProcessVS; PixelShader = PS_SignalBlur; RenderTarget = TexSignal; }
-#if CRT_USE_PERSISTENCE
     pass PersistUpdate { VertexShader = PostProcessVS; PixelShader = PS_PersistUpdate; RenderTarget = TexPersistCur; }
     pass PersistCopy { VertexShader = PostProcessVS; PixelShader = PS_PersistCopy; RenderTarget = TexPersistPrev; }
-#endif
-#if CRT_USE_HALATION
     pass Halation_Horizontal { VertexShader = PostProcessVS; PixelShader = PS_Halation_H; RenderTarget = TexHalationH; }
     pass Halation_Vertical { VertexShader = PostProcessVS; PixelShader = PS_Halation_V; RenderTarget = TexHalationV; }
-#endif
-#if CRT_USE_GLOW
     pass GlowDown { VertexShader = PostProcessVS; PixelShader = PS_GlowDown; RenderTarget = TexGlowA; }
     pass GlowBlurH { VertexShader = PostProcessVS; PixelShader = PS_GlowH; RenderTarget = TexGlowB; }
     pass GlowBlurV { VertexShader = PostProcessVS; PixelShader = PS_GlowV; RenderTarget = TexGlowA; }
-#endif
     pass Raster_Composite { VertexShader = PostProcessVS; PixelShader = PS_Raster_Composite; }
 }
