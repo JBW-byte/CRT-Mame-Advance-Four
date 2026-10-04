@@ -181,7 +181,7 @@ uniform float Blur_Width <
     ui_type = "drag"; ui_min = 0.0; ui_max = 4.0; ui_step = 0.05;
     ui_label = "Beam Bandwidth / Blur Width";
     ui_category = "=== 3. Analog Signal Filtering ===";
-> = 2.00;
+> = 1.45;
 
 uniform float RC_Bleed <
     ui_type = "drag"; ui_min = 0.5; ui_max = 3.0; ui_step = 0.05;
@@ -314,13 +314,13 @@ uniform float DPX_Colorfulness <
     ui_type = "drag"; ui_min = 0.5; ui_max = 4.0; ui_step = 0.05;
     ui_label = "DPX Colorfulness";
     ui_category = "=== 6. DPX Filmic Tone & Color ===";
-> = 1.35;
+> = 1.20;
 
 uniform float DPX_Saturation <
     ui_type = "drag"; ui_min = 0.5; ui_max = 2.0; ui_step = 0.05;
     ui_label = "DPX Saturation";
     ui_category = "=== 6. DPX Filmic Tone & Color ===";
-> = 1.20;
+> = 1.15;
 
 // ===================== 7. TUBE GEOMETRY & CURVATURE =====================
 uniform float2 G_Warp <
