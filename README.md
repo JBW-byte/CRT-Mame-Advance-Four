@@ -30,7 +30,8 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four.png" width="48%" />
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
 </p>
-
+Captured using bgfx and default chain selected for more blur/smoothing
+<br><br>
 There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually, fails if the horizontal screen has dark areas, mostly ok.
 
 ## ✨ Key Features
