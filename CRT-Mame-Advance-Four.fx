@@ -135,7 +135,7 @@ uniform int C_LineMode <
     ui_min = 0; ui_max = 6;
     ui_label = "Arcade Raster Line Preset";
     ui_category = "=== 2. System & Architecture ===";
-> = 2;
+> = 1;
 
 uniform float C_CustomLines <
     ui_type = "drag"; ui_min = 100.0; ui_max = 1200.0; ui_step = 1.0;
