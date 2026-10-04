@@ -14,7 +14,7 @@
     ===========================================================================
 */
 
-	Summary of v4.5 Upgrades:
+/*	Summary of v4.5 Upgrades:
     - Bandwidth Optimized: Intermediate render targets downgraded from RGBA16F to RGB10A2 and RGBA8, saving 50%+ VRAM bandwidth.
     - Kawase Downsampling: Replaced 16-tap Glow loop with a highly optimized 4-tap bilinear Kawase filter.
     - Luma Convergence: Deconvergence shift scales dynamically with pixel brightness (bright pixels bleed more).
@@ -33,6 +33,7 @@
     - Hardware Bilinear Demodulation: 3-tap hardware-interleaved NTSC composite filter saving 75% bandwidth.
     - HDR10 / scRGB Profiles: Industry-standard Rec.2020 / SMPTE ST 2084 PQ & scRGB mapping.
     ===========================================================================
+*/
 
 #include "ReShade.fxh"
 
