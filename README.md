@@ -30,7 +30,7 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four.png" width="48%" />
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
 </p>
-Captured using bgfx and default chain selected for more blur/smoothing. Match the Arcade Raster line Preset to the game hardware.
+Captured using bgfx and default chain selected for a free smoothing pass. for blur/smoothing, change blur width in Reshade 1.0 to 2.0. Match the Arcade Raster line Preset to the game hardware.
 <br><br>
 There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually, fails if the horizontal screen has dark areas, mostly ok.
 
@@ -105,7 +105,7 @@ code
    ```text
 # --- Video Options ---
 video                     d3d11       # Or 'bgfx' / 'opengl'
-filter                    0           # Disable bilinear filtering (let ReShade filter) or turn on for more smoothing
+filter                    1           # 1 - smoothing on , 0 - Disable bilinear filtering
 keepaspect                1           # Maintain original game aspect ratio
 unevenstretch             1           # Prevent MAME software scaling distortion
 
