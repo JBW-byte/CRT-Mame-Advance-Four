@@ -1,20 +1,16 @@
 /*
     ===========================================================================
-    CRT-Mame-Advance-Four.fx (v4.6 Deluxe Edition) 
+    CRT-Mame-Advance-Four.fx (v4.7 Deluxe Edition) 
     State-of-the-art CRT simulation engineered specifically for MAME64 (other emulators supported).
 
-    Summary of Updates:
+	Summary of v4.7 Upgrades:
     - User Defaults Applied: Exact configuration preset applied as hardcoded shader defaults.
     - Rebuilt Diffuse Glow: 4-tap bilinear box downsampler with soft-knee highlight gate
       and high-dispersion 9-tap bilinear Gaussian blur filter spanning wide tube areas.
     - Clean Tube Silhouettes: Accurate barrel distortion and exact rounded-box SDF corner anti-aliasing.
     - Bandwidth Optimized: Intermediate render targets run in RGB10A2 format saving VRAM bandwidth.
     - Quality Profiles: Selectable tiers (Performance 2-line, Balanced, Ultra 5-line taps).
-    - Compile-Safe: Zero compiler warnings across DirectX 10/11/12, Vulkan, and OpenGL.
-    ===========================================================================
-*/
 
-/*	Summary of v4.5 Upgrades:
     - Bandwidth Optimized: Intermediate render targets downgraded from RGBA16F to RGB10A2 and RGBA8, saving 50%+ VRAM bandwidth.
     - Kawase Downsampling: Replaced 16-tap Glow loop with a highly optimized 4-tap bilinear Kawase filter.
     - Luma Convergence: Deconvergence shift scales dynamically with pixel brightness (bright pixels bleed more).
@@ -741,8 +737,8 @@ float4 PS_Linearize(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
     bool isTate = GetTateState();
     float2 pad = GetPillarboxPadding(isTate);
 
-    if (UI_PassThroughBorder && (uv.x < pad.x || uv.x > (1.0 - pad.x) || uv.y < pad.y || uv.y > (1.0 - pad.y)))
-        return tex2D(ReShade::BackBuffer, uv);
+    if (uv.x < pad.x || uv.x > (1.0 - pad.x) || uv.y < pad.y || uv.y > (1.0 - pad.y))
+        return UI_PassThroughBorder ? tex2D(ReShade::BackBuffer, uv) : float4(0.0, 0.0, 0.0, 1.0);
 
     float3 color = tex2D(ReShade::BackBuffer, uv).rgb;
 
@@ -795,10 +791,7 @@ float4 PS_SignalBlur(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
     float2 activeSize = 1.0 - 2.0 * pad;
 
     if (uv.x < pad.x || uv.x > (1.0 - pad.x) || uv.y < pad.y || uv.y > (1.0 - pad.y))
-    {
-        if (UI_PassThroughBorder) return tex2D(SamplerLinear, uv);
-        return float4(0.0, 0.0, 0.0, 1.0);
-    }
+        return UI_PassThroughBorder ? tex2D(SamplerLinear, uv) : float4(0.0, 0.0, 0.0, 1.0);
 
     if (CMP_Enable)
     {
@@ -971,12 +964,9 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     float2 pad = GetPillarboxPadding(isTate);
     float2 activeSize = 1.0 - 2.0 * pad;
 
-    // Outer display boundary check
+    // Fast-path early exit for display padding
     if (uv.x < pad.x || uv.x > (1.0 - pad.x) || uv.y < pad.y || uv.y > (1.0 - pad.y))
-    {
-        if (UI_PassThroughBorder) return tex2D(ReShade::BackBuffer, uv);
-        return float4(0.0, 0.0, 0.0, 1.0);
-    }
+        return UI_PassThroughBorder ? tex2D(ReShade::BackBuffer, uv) : float4(0.0, 0.0, 0.0, 1.0);
 
     float2 localUV = (uv - pad) / max(activeSize, 0.0001);
     float2 activeWarp = G_Warp;
@@ -992,16 +982,12 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
 
     float2 warpedLocalUV = WarpCoords(localUV, activeWarp);
 
-    // Exact anti-aliased tube glass mask
-    float maskClip = 1.0;
-    if (G_EnableCurvature || G_CornerSize > 0.0001)
-    {
-        float r = max(G_CornerSize, 0.0001);
-        float2 cd = abs(warpedLocalUV - 0.5) - 0.5 + r;
-        float cornerDist = length(max(cd, 0.0)) + min(max(cd.x, cd.y), 0.0) - r;
-        float aaWidth = max(fwidth(cornerDist), 0.003);
-        maskClip = 1.0 - smoothstep(0.0, aaWidth, cornerDist);
-    }
+    // Exact anti-aliased tube glass mask (SDF calculated safely outside conditionals)
+    float r = max(G_CornerSize, 0.0001);
+    float2 cd = abs(warpedLocalUV - 0.5) - 0.5 + r;
+    float cornerDist = length(max(cd, 0.0)) + min(max(cd.x, cd.y), 0.0) - r;
+    float aaWidth = max(length(BUFFER_PIXEL_SIZE / max(activeSize, 0.0001)) * 1.5, 0.002);
+    float maskClip = (G_EnableCurvature || G_CornerSize > 0.0001) ? (1.0 - smoothstep(0.0, aaWidth, cornerDist)) : 1.0;
 
     float2 clampedWarpedUV = clamp(warpedLocalUV, 0.0005, 0.9995);
     bool hasDecon = (dot(D_StaticShift, D_StaticShift) + D_RadialYoke > 0.00001);
@@ -1159,18 +1145,20 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     mask = lerp(mask, float3(1.0, 1.0, 1.0), (saturate(lumaMask) * sqrt(saturate(lumaMask))) * M_Bloom);
     color *= mask * M_BrightBoost;
 
-    // Single-Wave Refresh Sweep
+    // Single-Wave Refresh Sweep (Protected from 24/7 FP32 phase degradation)
     if (Sync_Phase > 0.0)
     {
         float sweepCoord = isTate ? clampedWarpedUV.x : clampedWarpedUV.y;
-        float sweep = 0.5 + 0.5 * sin(6.2831853 * frac(sweepCoord - ((float)framecount * 0.015)));
+        float cycleTime = (float)(framecount % 360000) * 0.015;
+        float sweep = 0.5 + 0.5 * sin(6.2831853 * frac(sweepCoord - cycleTime));
         color *= lerp(1.0, 1.0 - Sync_Phase, sweep);
     }
 
     if (HB_Enable)
     {
         float humCoord = isTate ? clampedWarpedUV.x : clampedWarpedUV.y;
-        float humWave = sin(frac((float)framecount * (HB_Speed * 0.005) + humCoord * HB_Frequency) * 6.2831853);
+        float humTime = (float)(framecount % 360000) * (HB_Speed * 0.005);
+        float humWave = sin(frac(humTime + humCoord * HB_Frequency) * 6.2831853);
         color += (humWave * HB_Strength * 0.025) + color * (humWave * HB_Strength);
     }
 
@@ -1180,39 +1168,30 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     if (GL_Enable && GL_Strength > 0.0)
         color += tex2Dlod(SamplerGlowA, float4(sampleUV, 0.0, 0.0)).rgb * GL_Strength;
 
-    // Anti-Aliased Border Trim
-    color *= maskClip;
-
     // =========================================================================
-    // Display Output Mapping
+    // Display Output Mapping & Single-Pass Border Blend
     // =========================================================================
     if (HDR_Profile == 1) // HDR10 (Rec.2020 / SMPTE ST 2084 PQ)
     {
         float maxHeadroom = max(HDR_PeakNits / max(HDR_PaperWhite, 1.0), 1.0);
         float3 hdrLinear = lerp(1.0 + (maxHeadroom - 1.0) * tanh((color - 1.0) / max(maxHeadroom - 1.0, 0.001)), color, step(color, float3(1.0, 1.0, 1.0)));
         float3 physicalNits = mul(Mat_Rec709_to_Rec2020, max(hdrLinear * HDR_PaperWhite, 0.0));
-        color = max(EncodePQ(physicalNits) + COL_BlackLevel.xxx, 0.0);
+        float3 mappedColor = max(EncodePQ(physicalNits) + COL_BlackLevel.xxx, 0.0);
 
-        if (UI_PassThroughBorder)
-            color = lerp(EncodePQ(mul(Mat_Rec709_to_Rec2020, pow(max(tex2D(ReShade::BackBuffer, uv).rgb, 0.0), COL_InputGamma) * HDR_PaperWhite)), color, maskClip);
-        else
-            color *= maskClip;
+        float3 bg = UI_PassThroughBorder ? EncodePQ(mul(Mat_Rec709_to_Rec2020, pow(max(tex2D(ReShade::BackBuffer, uv).rgb, 0.0), COL_InputGamma) * HDR_PaperWhite)) : float3(0.0, 0.0, 0.0);
+        color = lerp(bg, mappedColor, maskClip);
     }
     else if (HDR_Profile == 2) // scRGB (Linear FP16)
     {
-        color = max((color * HDR_PaperWhite) / 80.0 + (COL_BlackLevel * (HDR_PaperWhite / 80.0)).xxx, 0.0);
-        if (UI_PassThroughBorder)
-            color = lerp(pow(max(tex2D(ReShade::BackBuffer, uv).rgb, 0.0), COL_InputGamma) * (HDR_PaperWhite / 80.0), color, maskClip);
-        else
-            color *= maskClip;
+        float3 mappedColor = max((color * HDR_PaperWhite) / 80.0 + (COL_BlackLevel * (HDR_PaperWhite / 80.0)).xxx, 0.0);
+        float3 bg = UI_PassThroughBorder ? (pow(max(tex2D(ReShade::BackBuffer, uv).rgb, 0.0), COL_InputGamma) * (HDR_PaperWhite / 80.0)) : float3(0.0, 0.0, 0.0);
+        color = lerp(bg, mappedColor, maskClip);
     }
     else // SDR (Standard)
     {
-        color = max(pow(max(color, 0.0), 1.0 / COL_OutputGamma) + COL_BlackLevel.xxx, 0.0);
-        if (UI_PassThroughBorder)
-            color = lerp(tex2D(ReShade::BackBuffer, uv).rgb, color, maskClip);
-        else
-            color *= maskClip;
+        float3 mappedColor = max(pow(max(color, 0.0), 1.0 / COL_OutputGamma) + COL_BlackLevel.xxx, 0.0);
+        float3 bg = UI_PassThroughBorder ? tex2D(ReShade::BackBuffer, uv).rgb : float3(0.0, 0.0, 0.0);
+        color = lerp(bg, mappedColor, maskClip);
     }
 
     return float4(color, 1.0);
