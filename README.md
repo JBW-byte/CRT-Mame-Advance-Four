@@ -45,8 +45,9 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
   * **288 Lines:** Namco Classics (*Pac-Man*, *Galaga*), PAL Arcade systems
   * **384 Lines:** Sega Model 2 / Model 3 Medium-Resolution
   * **480 Lines:** Sega NAOMI, Dreamcast, Standard VGA
+<br>
 
-* ### ⚡ 2. Electron Beam Dynamics & Dynamic Scanlines
+### ⚡ 2. Electron Beam Dynamics & Dynamic Scanlines
 * **Dynamic Beam Dilation:** Non-collapsing Gaussian profile interpolates beam width between dark troughs and highlight blooms with variable edge focus decay.
 * **Hardware-Interleaved NTSC/PAL Engine:** 3-tap composite filter with luma/chroma phase crosstalk and animated dot crawl.
 * **Host Subpixel Matrix Matching:** Clean phosphor mask reproduction tailored for Standard RGB, Inverted BGR, LG WRGB WOLED, and Samsung QD-OLED triangular matrices.
@@ -55,7 +56,7 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 * **Zero-Fringe Tube Framing:** Exact rounded-box Signed Distance Field (SDF) geometry with single-pass alpha blending to eliminate dark edge halos against MAME cabinet artwork.
 * **Optical Auto-TATE Detection:** Automatic horizontal (4:3) and vertical (3:4) raster switching via optical flank luminance probes and temporal Schmitt-trigger hysteresis.
 * **True HDR10 & scRGB Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding and configurable paper white/peak luminance.
-
+<br>
 
 ### 🔬 3. Vintage Hardware & Tube Quirks
 * **High-Voltage Anode Sag (Screen Breathing):** The tube raster physically balloons outward during full-screen explosions and flashes.
