@@ -20,7 +20,7 @@
 
 ## 📖 Overview
 
-**`CRT-Mame-Advance-Four`** is a high-performance, physically grounded CRT simulation shader engineered specifically for arcade emulation in **MAME64**. 
+**`CRT-Mame-Advance-Four`** is a high-performance, physically grounded CRT simulation shader engineered specifically for arcade emulation in **MAME64**.  [RetroArch Slang conversion](https://github.com/JBW-byte/RetroArch-CRT-Mame-Advance-Four/tree/main)
 
 Built from the ground up to eliminate common emulation artifacts (such as moiré pattern fringing, white-clipping, shadow crush, and uneven scanline dilation), this shader integrates physical electron beam dynamics, multi-subpixel OLED phosphor layouts, true linear-space analog signal modeling, and cabinet bezel optical reflections.
 
