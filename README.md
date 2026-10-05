@@ -73,8 +73,8 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 * **Adaptive Deconvergence Branching:** Uniform GPU branch skips red/blue coordinate offset lookups when convergence is centered, eliminating 66% of raster texture fetches.
 * **Zero-Fill Pass Early-Exit:**  Disabled optical features immediately early-return a constant zero-fill vector, skipping blur loops while preserving clean render-target state without the hazards of pixel discard.
 * **Quality Profiles:** Selectable performance tiers (Performance 2-line, Balanced 3-line, and Ultra 5-line dynamic beam taps).
-
 ---
+BGFX on its own looks great for the best performance, my custom preset https://github.com/JBW-byte/Mame-BGFX-Reshade
 
 ## 📥 Installation
 
