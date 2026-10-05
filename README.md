@@ -8,7 +8,6 @@
 [![Architecture](https://img.shields.io/badge/Pipeline-12--Pass%20(10--bit%20Optimized)-purple?style=for-the-badge)]()
 [![Display Support](https://img.shields.io/badge/Display-HDR10%20%7C%20scRGB%20%7C%20SDR-yellow?style=for-the-badge)]()
 [![API Support](https://img.shields.io/badge/APIs-DX10%20%7C%20DX11%20%7C%20DX12%20%7C%20Vulkan%20%7C%20OpenGL-brightgreen?style=for-the-badge)]()
-[![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)]()
 
 <p align="center">
   <b>Author:</b> L.E.D. &nbsp;|&nbsp; <b>Version:</b> 4.7 Deluxe Edition
