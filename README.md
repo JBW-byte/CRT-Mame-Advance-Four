@@ -45,31 +45,19 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
   * **288 Lines:** Namco Classics (*Pac-Man*, *Galaga*), PAL Arcade systems
   * **384 Lines:** Sega Model 2 / Model 3 Medium-Resolution
   * **480 Lines:** Sega NAOMI, Dreamcast, Standard VGA
-* **TATE Orientation:** First-class support for vertical arcade rasters (*DoDonPachi*, *Ikaruga*, *1942*).
 
-### 🔍 2. Phosphor Mask & Advanced Display Matrix Support
-* **Authentic Mask Profiles:**
-  * **Aperture Grille:** Fine-pitch vertical stripe mask (Sony Trinitron / BVM / PVM).
-  * **Slot Mask:** Staggered rectangular arcade slot mask (Nanao MS9, Wells-Gardner).
-  * **Shadow Mask:** Classic dot-triad delta mask.
-* **Modern Display Subpixel Mapping:**
-  * **Standard RGB:** LCD Panels.
-  * **Inverted BGR:** Laptops and inverted desktop displays.
-  * **LG WOLED (WRGB):** Dedicated 4-subpixel cadence with white-subpixel attenuation, preventing color wash-out on OLED panels.
-  * **Samsung QD-OLED:** Triangular subpixel array smoothing to eliminate fringing.
-* **Auto Mask Brightness Compensation (`M_AutoComp`):** Dynamically calculates mask transmission loss and restores target luminance without clipping highlights.
-* - HDR10 / scRGB Profiles: Industry-standard Rec.2020 / SMPTE ST 2084 PQ & scRGB mapping.
+* ### ⚡ 2. Electron Beam Dynamics & Dynamic Scanlines
+* **Dynamic Beam Dilation:** Non-collapsing Gaussian profile interpolates beam width between dark troughs and highlight blooms with variable edge focus decay.
+* **Hardware-Interleaved NTSC/PAL Engine:** 3-tap composite filter with luma/chroma phase crosstalk and animated dot crawl.
+  * **Host Subpixel Matrix Matching:** Clean phosphor mask reproduction tailored for Standard RGB, Inverted BGR, LG WRGB WOLED, and Samsung QD-OLED triangular matrices.
+  * **Mathematical Auto Mask Compensation:** Mean-transmission normalization prevents mask patterns from dimming the display without clipping highlights or washing out phosphor contrast.
+  * **Rebuilt 4-Tap Bilinear Diffuse Glow:** Wide, energy-conserving diffuse bloom covering up to 100+ pixels with soft-knee highlight extraction.
+  * **Zero-Fringe Tube Framing:** Exact rounded-box Signed Distance Field (SDF) geometry with single-pass alpha blending to eliminate dark edge halos against MAME cabinet artwork.
+  * **Optical Auto-TATE Detection:** Automatic horizontal (4:3) and vertical (3:4) raster switching via optical flank luminance probes and temporal Schmitt-trigger hysteresis.
+  * **True HDR10 & scRGB Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding and configurable paper white/peak luminance.
 
-### 📡 3. Linear-Space Analog Signal & NTSC Composite Emulation
-* **Pure Linear-Space YIQ Processing:** Chroma/Luma decoding operating completely free of gamma-space clipping distortions.
-* **Asymmetric Analog RC Delay Lines:** Authentic low-pass cable decay profile mimicking JAMMA harness color bleed.
-* **Composite Dot Crawl:** Frequency-locked subcarrier crosstalk and animated dot crawl with adjustable clock resolutions.
 
-### 📺 4. Glass Curvature, Bezel Reflections & Framing
-* **Barrel Curvature Distortion:** Glass tube curvature with exact piece-wise signed distance field (SDF) corner clipping.
-* **MAME Artwork Pass-Through (`UI_PassThroughBorder`):** Option to pass through original MAME bezels, marquees, and side artwork untouched while constraining CRT processing strictly to the active 4:3 / 3:4 tube raster.
-
-### 🔬 5. Vintage Hardware & Tube Quirks
+### 🔬 3. Vintage Hardware & Tube Quirks
 * **High-Voltage Anode Sag (Screen Breathing):** The tube raster physically balloons outward during full-screen explosions and flashes.
 * **Phosphor Persistence (Ghosting):** Independent R/G/B phosphor decay curves simulating classic arcade tube persistence.
 * **Deflection Yoke Deconvergence:** Radial and static multi-axis RGB convergence misalignment.
@@ -80,10 +68,10 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 
 ## 🚀 Performance Architecture
 
-* **Bandwidth Optimization:** Halation runs at half resolution (75% VRAM bandwidth reduction) and diffuse glow runs at 1/8th resolution with a 16-tap hardware-bilinear downsampler.
-* **Zero-Branch Inner Loops:** Flattened branchless math for deconvergence and scanlines to maximize GPU warp occupancy.
-* **Hardware Discard:** Disabled features execute `discard;` instantly, bypassing unneeded render target operations.
-*  Quality Profiles: Selectable tiers (Performance 2-line, Balanced, Ultra).
+* **Bandwidth Optimization:** Intermediate render targets use 32-bit RGB10A2 format (cutting VRAM bandwidth in half vs RGBA16F). Faceplate halation runs at half resolution (75% bandwidth reduction), and diffuse glow runs at 1/4 resolution using a 4-tap bilinear box downsampler (covering full 4×4 4×4 blocks).
+* **Adaptive Deconvergence Branching:** Uniform GPU branch skips red/blue coordinate offset lookups when convergence is centered, eliminating 66% of raster texture fetches.
+* **Zero-Fill Pass Early-Exit:**  Disabled optical features immediately early-return a constant zero-fill vector, skipping blur loops while preserving clean render-target state without the hazards of pixel discard.
+* **Quality Profiles:** Selectable performance tiers (Performance 2-line, Balanced 3-line, and Ultra 5-line dynamic beam taps).
 
 ---
 
@@ -106,4 +94,6 @@ video                     d3d11       # Or 'bgfx' / 'opengl'
 filter                    1           # 1 - smoothing on , 0 - Disable bilinear filtering
 keepaspect                1           # Maintain original game aspect ratio
 unevenstretch             1           # Prevent MAME software scaling distortion
+
+
 
