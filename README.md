@@ -49,12 +49,12 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
 * ### ⚡ 2. Electron Beam Dynamics & Dynamic Scanlines
 * **Dynamic Beam Dilation:** Non-collapsing Gaussian profile interpolates beam width between dark troughs and highlight blooms with variable edge focus decay.
 * **Hardware-Interleaved NTSC/PAL Engine:** 3-tap composite filter with luma/chroma phase crosstalk and animated dot crawl.
-  * **Host Subpixel Matrix Matching:** Clean phosphor mask reproduction tailored for Standard RGB, Inverted BGR, LG WRGB WOLED, and Samsung QD-OLED triangular matrices.
-  * **Mathematical Auto Mask Compensation:** Mean-transmission normalization prevents mask patterns from dimming the display without clipping highlights or washing out phosphor contrast.
-  * **Rebuilt 4-Tap Bilinear Diffuse Glow:** Wide, energy-conserving diffuse bloom covering up to 100+ pixels with soft-knee highlight extraction.
-  * **Zero-Fringe Tube Framing:** Exact rounded-box Signed Distance Field (SDF) geometry with single-pass alpha blending to eliminate dark edge halos against MAME cabinet artwork.
-  * **Optical Auto-TATE Detection:** Automatic horizontal (4:3) and vertical (3:4) raster switching via optical flank luminance probes and temporal Schmitt-trigger hysteresis.
-  * **True HDR10 & scRGB Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding and configurable paper white/peak luminance.
+* **Host Subpixel Matrix Matching:** Clean phosphor mask reproduction tailored for Standard RGB, Inverted BGR, LG WRGB WOLED, and Samsung QD-OLED triangular matrices.
+* **Mathematical Auto Mask Compensation:** Mean-transmission normalization prevents mask patterns from dimming the display without clipping highlights or washing out phosphor contrast.
+* **Rebuilt 4-Tap Bilinear Diffuse Glow:** Wide, energy-conserving diffuse bloom covering up to 100+ pixels with soft-knee highlight extraction.
+* **Zero-Fringe Tube Framing:** Exact rounded-box Signed Distance Field (SDF) geometry with single-pass alpha blending to eliminate dark edge halos against MAME cabinet artwork.
+* **Optical Auto-TATE Detection:** Automatic horizontal (4:3) and vertical (3:4) raster switching via optical flank luminance probes and temporal Schmitt-trigger hysteresis.
+* **True HDR10 & scRGB Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding and configurable paper white/peak luminance.
 
 
 ### 🔬 3. Vintage Hardware & Tube Quirks
