@@ -1,6 +1,6 @@
 /*
     ===========================================================================
-    CRT-Mame-Advance-Four.fx (v4.7 Deluxe Edition) 
+    CRT-Mame-Advance-Four.fx (v4.7 Deluxe Edition) Author L.E.D.
     State-of-the-art CRT simulation engineered specifically for MAME64 (other emulators supported).
 
 	Summary of v4.7 Upgrades:
