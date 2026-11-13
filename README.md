@@ -2,7 +2,7 @@
 
 # 🕹️ Reshade CRT-Mame-Advance-Four
 
-### *State-of-the-Art CRT Simulation Engineered Specifically for MAME64 & Arcade Preservation, compatible with many more emulators*
+### *State-of-the-Art experimental CRT Simulation Engineered Specifically for MAME64 & Arcade Preservation, compatible with many more emulators*
 
 [![ReShade Version](https://img.shields.io/badge/ReShade-5.0%2B%20%7C%206.0%2B-blue?style=for-the-badge&logo=reshade)](https://reshade.me)
 [![Architecture](https://img.shields.io/badge/Pipeline-12--Pass%20(10--bit%20Optimized)-purple?style=for-the-badge)]()
