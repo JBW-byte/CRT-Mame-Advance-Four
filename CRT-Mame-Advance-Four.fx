@@ -1,13 +1,15 @@
 /*
     ===========================================================================
-    CRT-Mame-Advance-Four.fx (v4.9 Deluxe Edition) Author L.E.D.
+    CRT-Mame-Advance-Four.fx (v4.10 Deluxe Edition) Author L.E.D.
     State-of-the-art CRT simulation engineered specifically for MAME64 (other emulators supported).
 
-    Summary of v4.9 Fixes & Improvements:
+    Summary of v4.10 Fixes & Improvements:
+    - Fixed HDR10 tanh() Overflow: Clamped tanh() argument to [0.0, 10.0] to prevent INF/NaN
+      corruption when HDR_PaperWhite >= HDR_PeakNits.
     - Fixed scRGB & HDR10 Black Level Crush: Converted COL_BlackLevel from gamma output space
       to linear physical luminance for HDR10 (pre-PQ) and scRGB, matching SDR shadow fidelity.
-    - Fixed Composite Dot Crawl at Low Chroma Blur: CMP_Artifacts edge detector now falls back
-      to a 1-texel luma probe when CMP_ChromaBlur < 1.0 so dot crawl stays active down to 0.0.
+    - Fixed Composite Dot Crawl at Low Chroma Blur: CMP_Artifacts edge detector falls back to
+      a 1-texel luma probe when CMP_ChromaBlur < 1.0 so dot crawl stays active down to 0.0.
     - Fixed Corner Focus Blowout: Normalized and clamped B_EdgeDefocus so sharpness never turns negative.
     - Fixed Bezel Glow Bleed: Zeroed border pixels in Linearize/SignalBlur and masked/clamped Glow passes.
     - Fixed HDR10/scRGB Border Seam: Unified border/corner background mapping via GetBorderBG().
@@ -16,7 +18,7 @@
     - Fixed Stationary Glass Bezel & Full-RGB Convergence: Fixed bezel SDF during HV sag and full-luma
       deconvergence scaling in SampleCRT() at zero extra texture bandwidth.
     - Fixed Minor Quirks: Removed CMP_ChromaBlur [0..1] dead zone, integer-aligned Shadow Mask rowShift.
-    - Optimizations & Optional Controls: Added < pooled = true; > on scratch targets, corner early-out,
+    - Optimizations & Controls: Added < pooled = true; > on scratch targets, corner early-out,
       timer-based hum/sync waves, 7-tap Gaussian blur, linearized HV sag probe, Auto HDR profile via
       BUFFER_COLOR_SPACE, and CRT_ENABLE_PERSISTENCE preprocessor toggle (set to 0 for max FPS).
     ===========================================================================
@@ -1251,7 +1253,11 @@ float4 PS_Raster_Composite(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_
     if (hdrMode == 1) // HDR10 (Rec.2020 / SMPTE ST 2084 PQ)
     {
         float maxHeadroom = max(HDR_PeakNits / max(HDR_PaperWhite, 1.0), 1.0);
-        float3 hdrLinear = lerp(1.0 + (maxHeadroom - 1.0) * tanh((color - 1.0) / max(maxHeadroom - 1.0, 0.001)), color, step(color, float3(1.0, 1.0, 1.0)));
+        float3 hdrLinear = lerp(
+            1.0 + (maxHeadroom - 1.0) * tanh(clamp((color - 1.0) / max(maxHeadroom - 1.0, 0.001), 0.0, 10.0)),
+            color,
+            step(color, float3(1.0, 1.0, 1.0))
+        );
         float3 physicalNits = mul(Mat_Rec709_to_Rec2020, max(hdrLinear * HDR_PaperWhite, 0.0)) + (blackOffsetLinear * HDR_PaperWhite).xxx;
         mappedColor = EncodePQ(max(physicalNits, 0.0));
     }
