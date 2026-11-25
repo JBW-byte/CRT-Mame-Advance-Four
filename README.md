@@ -4,14 +4,14 @@
 
 ### *State-of-the-Art experimental CRT Simulation Engineered Specifically for MAME64 & Arcade Preservation, compatible with many more emulators*
 
-[![ReShade Version](https://img.shields.io/badge/ReShade-5.0%2B%20%7C%206.0%2B-blue?style=for-the-badge&logo=reshade)](https://reshade.me)
-[![Architecture](https://img.shields.io/badge/Pipeline-12--Pass%20(10--bit%20Optimized)-purple?style=for-the-badge)]()
+[![ReShade Version](https://img.shields.io/badge/ReShade-5.0%2B%20%7C%206.6%2B-blue?style=for-the-badge&logo=reshade)](https://reshade.me)
+[![Architecture](https://img.shields.io/badge/Pipeline-12--Pass%20(10--Pass%20Fast%20Mode)-purple?style=for-the-badge)]()
 [![Display Support](https://img.shields.io/badge/Display-HDR10%20%7C%20scRGB%20%7C%20SDR-yellow?style=for-the-badge)]()
 [![API Support](https://img.shields.io/badge/APIs-DX10%20%7C%20DX11%20%7C%20DX12%20%7C%20Vulkan%20%7C%20OpenGL-brightgreen?style=for-the-badge)]()
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/led_jbw)
 
 <p align="center">
-  <b>Author:</b> L.E.D. &nbsp;|&nbsp; <b>Version:</b> 4.7 Deluxe Edition
+  <b>Author:</b> L.E.D. &nbsp;|&nbsp; <b>Version:</b> 4.10 Deluxe Edition
 </p>
 
 ---
@@ -20,7 +20,7 @@
 
 ## 📖 Overview
 
-**`CRT-Mame-Advance-Four`** is a high-performance, physically grounded CRT simulation shader engineered specifically for arcade emulation in **MAME64**.  [RetroArch Slang conversion](https://github.com/JBW-byte/RetroArch-CRT-Mame-Advance-Four/tree/main)
+**`CRT-Mame-Advance-Four`** is a high-performance, physically grounded CRT simulation shader engineered specifically for arcade emulation in **MAME64**. [RetroArch Slang conversion](https://github.com/JBW-byte/RetroArch-CRT-Mame-Advance-Four/tree/main)
 
 Built from the ground up to eliminate common emulation artifacts (such as moiré pattern fringing, white-clipping, shadow crush, and uneven scanline dilation), this shader integrates physical electron beam dynamics, multi-subpixel OLED phosphor layouts, true linear-space analog signal modeling, and cabinet bezel optical reflections.
 
@@ -30,9 +30,10 @@ Built from the ground up to eliminate common emulation artifacts (such as moiré
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four.png" width="48%" />
   <img src="https://raw.githubusercontent.com/JBW-byte/Screenshots/refs/heads/main/CRT-Mame-Advance-Four-2.png" width="48%" />
 </p>
-Captured using bgfx and default chain selected for a free smoothing pass. for blur/smoothing, change blur width in Reshade 1.0 to 2.0. Match the Arcade Raster line Preset to the game hardware.
+
+Captured using BGFX with the default chain selected for a free smoothing pass. For blur/smoothing adjustments in ReShade, tweak `Blur_Width` between `1.0` and `2.0`, and match the **Arcade Raster Line Preset** to the game hardware.
 <br><br>
-There is an attempt to auto detect Horizontal or Vertical layout, you may need to set it manually, fails if the horizontal screen has dark areas, mostly ok.
+Auto-TATE detection attempts to switch automatically between Horizontal (`4:3`) and Vertical (`3:4`) layouts; you may need to set it manually on games with very dark outer screens, or when using MAME side bezel artwork (which triggers the flank sensor as Horizontal).
 
 ## ✨ Key Features
 
@@ -45,56 +46,39 @@ There is an attempt to auto detect Horizontal or Vertical layout, you may need t
   * **288 Lines:** Namco Classics (*Pac-Man*, *Galaga*), PAL Arcade systems
   * **384 Lines:** Sega Model 2 / Model 3 Medium-Resolution
   * **480 Lines:** Sega NAOMI, Dreamcast, Standard VGA
-<br>
 
-### ⚡ 2. Electron Beam Dynamics & Dynamic Scanlines
-* **Dynamic Beam Dilation:** Non-collapsing Gaussian profile interpolates beam width between dark troughs and highlight blooms with variable edge focus decay.
+### 🎯 2. Optical Engineering, Signal & Mask Fidelity
+* **Dynamic Beam Dilation & Edge Focus:** Non-collapsing Gaussian profile interpolates beam width between dark troughs and highlight blooms with clamped corner yoke defocus.
+* **7-Tap Gaussian & Analog RC Signal Filtering:** Corner-safe 7-tap symmetric Gaussian, asymmetric JAMMA RC cable bleed, and dual-axis flyback defocus.
 * **Hardware-Interleaved NTSC/PAL Engine:** 3-tap composite filter with luma/chroma phase crosstalk and animated dot crawl.
 * **Host Subpixel Matrix Matching:** Clean phosphor mask reproduction tailored for Standard RGB, Inverted BGR, LG WRGB WOLED, and Samsung QD-OLED triangular matrices.
 * **Mathematical Auto Mask Compensation:** Mean-transmission normalization prevents mask patterns from dimming the display without clipping highlights or washing out phosphor contrast.
-* **Rebuilt 4-Tap Bilinear Diffuse Glow:** Wide, energy-conserving diffuse bloom covering up to 100+ pixels with soft-knee highlight extraction.
-* **Zero-Fringe Tube Framing:** Exact rounded-box Signed Distance Field (SDF) geometry with single-pass alpha blending to eliminate dark edge halos against MAME cabinet artwork.
-* **Optical Auto-TATE Detection:** Automatic horizontal (4:3) and vertical (3:4) raster switching via optical flank luminance probes and temporal Schmitt-trigger hysteresis.
-* **True HDR10 & scRGB Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding and configurable paper white/peak luminance.
-<br>
+* **4-Tap Bilinear Diffuse Glow:** Wide, energy-conserving diffuse bloom protected against bezel artwork bleed, paired with soft-knee highlight extraction.
+* **Zero-Fringe Stationary Tube Framing:** Exact rounded-box Signed Distance Field (SDF) glass bezel with single-pass blending against MAME cabinet artwork.
+* **Optical Auto-TATE Detection:** Automatic horizontal (`4:3`) and vertical (`3:4`) raster switching via optical flank luminance probes and temporal hysteresis.
+* **True HDR10, scRGB & Auto Swapchain Support:** Native Rec.2020 color transforms with SMPTE ST 2084 (PQ) encoding, overflow-safe highlight roll-off, physically matched SDR/HDR black levels, and optional `Auto` detection (`BUFFER_COLOR_SPACE`).
 
 ### 🔬 3. Vintage Hardware & Tube Quirks
-* **High-Voltage Anode Sag (Screen Breathing):** The tube raster physically balloons outward during full-screen explosions and flashes.
-* **Phosphor Persistence (Ghosting):** Independent R/G/B phosphor decay curves simulating classic arcade tube persistence.
-* **Deflection Yoke Deconvergence:** Radial and static multi-axis RGB convergence misalignment.
-* **AC Ground Hum Bar:** Rolling 50Hz / 60Hz power supply ground loop hum.
+* **High-Voltage Anode Sag (Screen Breathing):** Linearized beam-current probing balloons the raster behind a stationary glass bezel during full-screen explosions and flashes.
+* **Phosphor Persistence & Tube Aging:** Independent R/G/B phosphor decay trails (`P_Decay`), phosphor burn-in/aging (`Tube_Age`), and `480i`/`240p` interlacing/line jitter.
+* **Deflection Yoke Deconvergence:** Static and radial RGB convergence misalignment with full-luminance bleed scaling.
+* **Framerate-Independent AC Hum Bar & Sync Sweep:** Timer-driven rolling ground-loop hum and single-wave refresh sweep that stay consistent across 60Hz, 120Hz+, and VRR displays.
 * **P22 Phosphor Gamut Mixing:** Reconstructs authentic EBU/P22 arcade phosphor chromaticity.
 
 ---
 
 ## 🚀 Performance Architecture
 
-* **Bandwidth Optimization:** Intermediate render targets use 32-bit RGB10A2 format (cutting VRAM bandwidth in half vs RGBA16F). Faceplate halation runs at half resolution (75% bandwidth reduction), and diffuse glow runs at 1/4 resolution using a 4-tap bilinear box downsampler (covering full 4×4 4×4 blocks).
+* **Bandwidth & Precision Optimization:** Intermediate linear targets use **`32-bit R11G11B10F`** on ReShade 6.6+ (`D3D10+ / OpenGL / Vulkan`)—cutting VRAM bandwidth in half vs. `RGBA16F` while eliminating 10-bit dark-shadow banding—with automatic `RGBA16F` fallback on older ReShade builds or D3D9. Faceplate halation runs at half resolution (75% bandwidth reduction), and diffuse glow runs at 1/4 resolution using a 4-tap bilinear box downsampler (covering full 4×4 blocks).
+* **VRAM Pooling & Early-Outs:** Transient scratch targets use `< pooled = true; >` to alias VRAM across effects without disturbing temporal history buffers. Outer bezel regions and rounded corners (`maskClip <= 0.0`) early-exit before scanline/mask sampling, and disabled optical passes return a constant zero-fill.
 * **Adaptive Deconvergence Branching:** Uniform GPU branch skips red/blue coordinate offset lookups when convergence is centered, eliminating 66% of raster texture fetches.
-* **Zero-Fill Pass Early-Exit:**  Disabled optical features immediately early-return a constant zero-fill vector, skipping blur loops while preserving clean render-target state without the hazards of pixel discard.
-* **Quality Profiles:** Selectable performance tiers (Performance 2-line, Balanced 3-line, and Ultra 5-line dynamic beam taps).
+* **Optional Fast 10-Pass Mode:** Set `CRT_ENABLE_PERSISTENCE=0` in ReShade's **Preprocessor Definitions** to skip both persistence passes and free two full-resolution render targets when phosphor ghosting isn't needed.
+* **Quality Profiles:** Selectable performance tiers (`Performance` 2-line, `Balanced` 3-line, and `Ultra` 5-line dynamic beam taps).
+
 ---
-BGFX on its own looks great for the best performance, my custom preset https://github.com/JBW-byte/Mame-BGFX-Reshade
+
+BGFX on its own looks great for the best performance — my custom preset: https://github.com/JBW-byte/Mame-BGFX-Reshade
 
 ## 📥 Installation
 
-1. Install **[ReShade](https://reshade.me/)** (with full Add-on support) for your MAME executable (`mame.exe` / `mame64.exe`).
-2. Copy `CRT-Mame-Advance-Four.fx` into your MAME shaders directory:
-   ```text
-   📁 MAME/
-   └── 📁 reshade-shaders/
-       └── 📁 Shaders/
-           └── CRT-Mame-Advance-Four.fx
-
-⚙️ Recommended MAME Configuration
-To ensure the shader receives clean, unscaled raw pixels directly from the arcade core, configure your mame.ini:
-code
-   ```text
-# --- Video Options ---
-video                     d3d11       # Or 'bgfx' / 'opengl'
-filter                    1           # 1 - smoothing on , 0 - Disable bilinear filtering
-keepaspect                1           # Maintain original game aspect ratio
-unevenstretch             1           # Prevent MAME software scaling distortion
-
-
-
+1. Install **[ReShad
