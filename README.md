@@ -79,6 +79,26 @@ Auto-TATE detection attempts to switch automatically between Horizontal (`4:3`) 
 
 BGFX on its own looks great for the best performance — my custom preset: https://github.com/JBW-byte/Mame-BGFX-Reshade
 
-## 📥 Installation
+```text
+📁 MAME/
+└── 📁 reshade-shaders/
+    └── 📁 Shaders/
+        └── CRT-Mame-Advance-Four.fx
+```
 
-1. Install **[ReShad
+---
+
+## ⚙️ Recommended `mame.ini` Settings
+
+Generate a config with `mame -createconfig` if needed, and set the following options so the shader receives a cleanly framed image:
+
+| Setting | Value | Notes |
+| :--- | :--- | :--- |
+| **video** | `bgfx` | Recommended (`bgfx`, `d3d`, or `opengl`) |
+| **filter** | `1` | `1` = bilinear pre-smoothing, `0` = raw sharp pixels |
+| **keepaspect** | `1` | Maintain original `4:3` / `3:4` game aspect ratio |
+| **unevenstretch** | `1` | Fractional scaling to fill the tube frame (`0` = integer-only borders) |
+| **bgfx_backend** | `d3d11` | `d3d11`, `d3d12`, `vulkan`, `opengl`, or `auto` (match your ReShade API) |
+| **bgfx_screen_chains** | `default` | `default` (free bilinear smoothing) or `unfiltered` (raw pixels) |
+
+> **Tip:** Make sure the **API selected in ReShade** during installation matches `bgfx_backend` (e.g., DirectX 10/11/12 for `d3d11`/`d3d12`, Vulkan for `vulkan`, or OpenGL for `opengl`). If using `video d3d` or `video opengl` instead of `bgfx`, install ReShade for DirectX 9 or OpenGL respectively.
